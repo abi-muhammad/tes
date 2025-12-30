@@ -1,236 +1,34 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekspresi Perasaan</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@300;400;600&display=swap');
-        
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradient 15s ease infinite;
-            height: 100vh;
-            margin: 0;
-            overflow-x: hidden;
-        }
-        
-        @keyframes gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        
-        .heart {
-            position: absolute;
-            pointer-events: none;
-            transform: translate(-50%, -50%);
-            opacity: 0;
-        }
-        
-        .heart::before {
-            content: "❤️";
-            font-size: 24px;
-            animation: float 4s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-        
-        .love-letter {
-            position: relative;
-            transform: scale(0);
-            transition: all 0.5s ease;
-        }
-        
-        .love-letter.active {
-            transform: scale(1);
-        }
-        
-        .confession-input {
-            border: none;
-            border-bottom: 2px solid white;
-            background: transparent;
-            outline: none;
-            color: white;
-            font-size: 1.2rem;
-            width: 80%;
-            padding: 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .confession-input:focus {
-            border-bottom-color: #ffeb3b;
-        }
-        
-        .btn-heartbeat {
-            animation: heartbeat 1.5s infinite;
-        }
-        
-        @keyframes heartbeat {
-            0% { transform: scale(1); }
-            25% { transform: scale(1.1); }
-            50% { transform: scale(1); }
-            75% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-    </style>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Memories</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer="" src="script.js"></script>
 </head>
-<body class="flex items-center justify-center">
-    <div class="w-11/12 max-w-2xl text-center">
-        <div class="bg-white bg-opacity-20 backdrop-filter backdrop-blur-lg rounded-3xl p-8 shadow-2xl text-white">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6" style="font-family: 'Pacifico', cursive;">💌 Ucapkan Perasaanmu</h1>
-            
-            <div class="mb-8">
-                <p class="text-lg mb-4">Tuliskan perasaan yang ingin kamu sampaikan...</p>
-                <input type="text" 
-                       class="confession-input mb-4" 
-                       id="confessionInput" 
-                       placeholder="Aku ingin mengatakan..." 
-                       autocomplete="off">
-                <button id="sendBtn" class="btn-heartbeat bg-pink-500 hover:bg-pink-600 text-white font-bold py-3 px-6 rounded-full transition duration-300">
-                    Kirim Perasaan 💖
-                </button>
-            </div>
-            
-            <div id="resultSection" class="love-letter bg-white bg-opacity-30 rounded-xl p-6 mb-8 hidden">
-                <p id="confessionText" class="text-xl mb-4"></p>
-                <div class="flex justify-center space-x-4 mt-4">
-                    <button id="acceptBtn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 transform hover:scale-110">
-                        💞 Terima
-                    </button>
-                    <button id="rejectBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full transition duration-300 transform hover:scale-110">
-                        😢 Tolak
-                    </button>
-                </div>
-            </div>
-            
-            <div id="finalMessage" class="text-2xl hidden"></div>
-        </div>
-    </div>
+<body class="loaded">
+  <nav>
+    <a href="/">Home</a>
+    <a class="active" href="/memories">Memories</a>
+    <a href="/gallery">Gallery</a>
+    <a href="/message">Message</a>
+    <a href="/ourstory">Reasons</a>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const sendBtn = document.getElementById('sendBtn');
-            const confessionInput = document.getElementById('confessionInput');
-            const resultSection = document.getElementById('resultSection');
-            const confessionText = document.getElementById('confessionText');
-            const acceptBtn = document.getElementById('acceptBtn');
-            const rejectBtn = document.getElementById('rejectBtn');
-            const finalMessage = document.getElementById('finalMessage');
-            
-            // Membuat efek hati saat mengklik button
-            sendBtn.addEventListener('click', createHearts);
-            sendBtn.addEventListener('click', showConfession);
-            
-            // Fungsi untuk membuat efek hati
-            function createHearts(e) {
-                const btn = e.target;
-                const btnRect = btn.getBoundingClientRect();
-                const x = btnRect.left + btnRect.width/2;
-                const y = btnRect.top + btnRect.height/2;
-                
-                for(let i = 0; i < 12; i++) {
-                    const heart = document.createElement('div');
-                    heart.classList.add('heart');
-                    heart.style.left = x + 'px';
-                    heart.style.top = y + 'px';
-                    heart.style.opacity = '1';
-                    
-                    // Random positioning
-                    const angle = Math.random() * Math.PI * 2;
-                    const distance = 50 + Math.random() * 100;
-                    const xOffset = Math.cos(angle) * distance;
-                    const yOffset = Math.sin(angle) * distance;
-                    
-                    // Random animation delay
-                    heart.style.animationDelay = Math.random() * 2 + 's';
-                    
-                    document.body.appendChild(heart);
-                    
-                    // Animate hearts
-                    setTimeout(() => {
-                        heart.style.transform = `translate(${xOffset}px, ${yOffset - 100}px) rotate(${Math.random() * 60 - 30}deg)`;
-                        heart.style.opacity = '0';
-                        
-                        // Remove after animation
-                        setTimeout(() => {
-                            heart.remove();
-                        }, 2000);
-                    }, 10);
-                }
-            }
-            
-            // Fungsi untuk menampilkan isi confession
-            function showConfession() {
-                const message = confessionInput.value.trim();
-                if(message === '') {
-                    alert('Tuliskan perasaanmu terlebih dahulu!');
-                    return;
-                }
-                
-                resultSection.classList.remove('hidden');
-                confessionText.textContent = message;
-                loveLetter.classList.add('active');
-                confessionInput.value = '';
-            }
-            
-            // Tombol terima
-            acceptBtn.addEventListener('click', function() {
-                resultSection.classList.add('hidden');
-                finalMessage.innerHTML = '💖 Yay! Perasaanmu diterima dengan senang hati! 💖<br><span class="text-xl">Semoga hubungan kalian semakin indah! 🌈</span>';
-                finalMessage.classList.remove('hidden');
-                
-                // Fireworks effect
-                celebrate();
-            });
-            
-            // Tombol tolak
-            rejectBtn.addEventListener('click', function() {
-                resultSection.classList.add('hidden');
-                finalMessage.innerHTML = '😢 Perasaanmu untuk sementara belum bisa dibalas...<br><span class="text-xl">Tapi jangan sedih, hari esok pasti lebih baik! 🌟</span>';
-                finalMessage.classList.remove('hidden');
-            });
-            
-            // Efek perayaan
-            function celebrate() {
-                for(let i = 0; i < 30; i++) {
-                    setTimeout(() => {
-                        const emoji = ['✨', '🎉', '💖', '🎊', '🥳'][Math.floor(Math.random() * 5)];
-                        const firework = document.createElement('div');
-                        firework.innerHTML = emoji;
-                        firework.style.position = 'absolute';
-                        firework.style.left = Math.random() * window.innerWidth + 'px';
-                        firework.style.top = Math.random() * window.innerHeight + 'px';
-                        firework.style.fontSize = (20 + Math.random() * 30) + 'px';
-                        firework.style.transform = 'scale(0)';
-                        firework.style.transition = 'all 1s ease-out';
-                        
-                        document.body.appendChild(firework);
-                        
-                        setTimeout(() => {
-                            firework.style.transform = 'scale(1)';
-                            firework.style.opacity = '0';
-                            setTimeout(() => firework.remove(), 1000);
-                        }, 10);
-                    }, i * 150);
-                }
-            }
-            
-            // Animasi saat hover di input
-            confessionInput.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.05)';
-            });
-            
-            confessionInput.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
-            });
-        });
-    </script>
-</body>
-</html>
+  </nav>
+
+  <section class="content fade-in">
+    <h1>Our Memories 💞</h1>
+    <div class="memories-grid">
+      <img src="1stM.jpg" alt="Memory 1">
+      <img src="2ndM.jpg" alt="Memory 2">
+      <img src="3rdM.jpg" alt="Memory 3">
+      <img src="4thM.jpg" alt="Memory 4">
+      <img src="5thM.jpg" alt="Memory 5">
+      <img src="6thM.jpg" alt="Memory 6">
+      <img src="7thM.jpg" alt="Memory 7">
+      <img src="8thM.jpg" alt="Memory 8">
+      <img src="9thM.jpg" alt="Memory 9">
+    </div>
+  </section>
+
+
+</body></html>
