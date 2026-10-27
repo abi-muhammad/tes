@@ -1,17 +1,17 @@
 import * as THREE from 'three';
 
 export const TEACHER_QUOTES = [
-  '"Heh! Ngapain nongkrong di koridor XI A1?! Masuk kelas!"',
-  '"Berhenti kamu! Jangan kabur lewat kantin ya!"',
-  '"PRIIIT! Jam pelajaran kok malah santai di belakang kelas!"',
-  '"Sini kamu! Jangan ngumpet di parkiran motor!"',
-  '"Jangan lari! Pak Wahid catat namanya sekarang!"',
-  '"Awas ya! Ketangkap langsung menghadap ke Ruang BK!"'
+  '"Heh! Ngapain keluar ke kamar mandi berdua!"',
+  '"Berhenti kamu! Bajunya di masukin!"',
+  '"PRIIIT! Habis balikin MBG kok malah santai di belakang kelas!"',
+  '"Sini kamu! Rambut kamu kapan mau di cukur!"',
+  '"Berhent! Kenapa sepatu kamu warna warni!"',
+  '"Awas ya! Ketangkap langsung ke Ruang BK panggian wali!"'
 ];
 
 export const GAMEOVER_QUOTES = [
   '"Ketangkap kamu! Nongkrong di lorong SMAN 1 Pasir Sakti pas jam pelajaran, ikut Bapak ke Ruang BK!"',
-  '"Hosh... hosh... Bapak masih sanggup kejar sampai parkiran motor! Ayo balik ke kelas XI A1!"',
+  '"Bapak masih sanggup kejar sampai parkiran motor! Ayo balik ke kelas XI A1!"',
   '"Nongkrong boleh, ketahuan jangan! Sekarang rapikan barisan dan masuk kelas!"',
   '"Mau kabur ke kantin ya?! Jam pelajaran sudah mulai, ayo ikut Pak Wahid sekarang!"'
 ];
