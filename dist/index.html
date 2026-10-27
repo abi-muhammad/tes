@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#2f6f4e" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="KEJARAN PAK WAHID! Game 3D Endless Runner realistis berlatar SMA Negeri 1 Pasir Sakti — Koridor Kelas, Kantin, dan Parkiran Motor." />
+  <title>KEJARAN PAK WAHID! — SMA Negeri 1 Pasir Sakti</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg" />
+  <link rel="apple-touch-icon" href="./icons/icon-192.svg" />
+  <link rel="stylesheet" href="./assets/style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="app">
+    <div id="canvas-container" aria-label="Area Permainan 3D Kejaran Pak Wahid"></div>
+
+    <div id="webgl-fallback" class="overlay hidden" role="alert">
+      <div class="modal-card error-card">
+        <div class="badge-tag danger">WebGL Tidak Tersedia</div>
+        <h2>Yah, Browser Belum Mendukung Grafis 3D</h2>
+        <p>
+          Perangkat atau browser Anda saat ini menonaktifkan <strong>WebGL</strong>.
+          Silakan gunakan <strong>Google Chrome</strong> terbaru di Android/PC dan pastikan akselerasi perangkat keras aktif.
+        </p>
+      </div>
+    </div>
+
+    <div id="orientation-toast" class="orientation-toast hidden">
+      <span>📱 Mode Portrait &amp; Landscape siap! Putar layar ke Landscape untuk pandangan koridor lebih luas.</span>
+      <button id="btn-dismiss-toast" type="button" aria-label="Tutup saran orientasi">✕</button>
+    </div>
+
+    <header id="hud" class="hud hidden">
+      <div class="hud-top">
+        <div class="hud-stats">
+          <div class="stat-pill score-pill">
+            <span class="stat-label">SKOR</span>
+            <span id="hud-score" class="stat-value">0 m</span>
+          </div>
+          <div class="stat-pill coin-pill">
+            <span class="coin-icon">🪙</span>
+            <span id="hud-coins" class="stat-value">0</span>
+          </div>
+          <div class="stat-pill best-pill">
+            <span class="stat-label">REKOR</span>
+            <span id="hud-highscore" class="stat-value">0 m</span>
+          </div>
+          <div class="stat-pill fps-pill" title="Frame per detik">
+            <span id="hud-fps" class="stat-label">60 FPS</span>
+          </div>
+        </div>
+
+        <div class="hud-actions">
+          <button id="btn-hud-help" class="icon-btn" type="button" title="Panduan Kontrol" aria-label="Panduan Kontrol">❓</button>
+          <button id="btn-hud-mute" class="icon-btn" type="button" title="Suara" aria-label="Bisu atau Nyalakan Suara">🔊</button>
+          <button id="btn-hud-pause" class="icon-btn pause-btn" type="button" title="Jeda Permainan" aria-label="Jeda Permainan">⏸️</button>
+        </div>
+      </div>
+
+      <div class="chase-meter-wrap">
+        <div class="chase-header">
+          <span id="chase-status-text" class="chase-status">👨‍🏫 Jarak Pak Wahid: Aman</span>
+          <span id="chase-distance-text" class="chase-dist">18 m di belakang</span>
+        </div>
+        <div class="chase-bar-bg">
+          <div id="chase-bar-fill" class="chase-bar-fill"></div>
+          <div id="chase-teacher-head" class="chase-marker teacher-marker" title="Pak Wahid">👨‍🏫</div>
+          <div class="chase-marker student-marker" title="Siswa">🏃</div>
+        </div>
+      </div>
+
+      <div id="hud-powerups" class="hud-powerups"></div>
+
+      <div id="comic-bubble" class="comic-bubble hidden">
+        <span class="bubble-speaker">PAK WAHID:</span>
+        <span id="comic-bubble-text">"Heh! Ngapain nongkrong di koridor XI A1?!"</span>
+      </div>
+    </header>
+
+    <div id="virtual-controls" class="virtual-controls hidden" aria-label="Kontrol Layar Sentuh">
+      <div class="vc-cluster vc-left">
+        <button id="btn-vc-left" class="vc-btn" type="button" aria-label="Pindah Jalur Kiri">
+          <span class="vc-arrow">◀</span>
+          <span class="vc-caption">KIRI</span>
+        </button>
+        <button id="btn-vc-right" class="vc-btn" type="button" aria-label="Pindah Jalur Kanan">
+          <span class="vc-arrow">▶</span>
+          <span class="vc-caption">KANAN</span>
+        </button>
+      </div>
+      <div class="vc-cluster vc-right">
+        <button id="btn-vc-jump" class="vc-btn vc-jump" type="button" aria-label="Melompat">
+          <span class="vc-arrow">▲</span>
+          <span class="vc-caption">LOMPAT</span>
+        </button>
+        <button id="btn-vc-slide" class="vc-btn vc-slide" type="button" aria-label="Meluncur">
+          <span class="vc-arrow">▼</span>
+          <span class="vc-caption">SLIDE</span>
+        </button>
+      </div>
+    </div>
+
+    <section id="menu-screen" class="overlay">
+      <div class="modal-card main-menu-card">
+        <div class="school-crest">📍 SMA NEGERI 1 PASIR SAKTI • KORIDOR – KANTIN – PARKIRAN</div>
+        <h1 class="game-title">KEJARAN<br /><span>PAK WAHID!</span></h1>
+        <p class="tagline-motto"><em>"Nongkrong boleh, ketahuan jangan!"</em></p>
+        <p class="story-blurb">
+          Ketahuan nongkrong di lorong belakang kelas <strong>XI A1</strong> saat jam pelajaran! Lari melewati koridor kelas, area kantin, hingga parkiran motor sebelum ditangkap <strong>Pak Wahid</strong>!
+        </p>
+
+        <div class="menu-records">
+          <div class="record-box">
+            <span class="record-label">🏆 Rekor Jarak</span>
+            <strong id="menu-best-score">0 m</strong>
+          </div>
+          <div class="record-box">
+            <span class="record-label">🪙 Koin Kantin</span>
+            <strong id="menu-total-coins">0</strong>
+          </div>
+        </div>
+
+        <div class="menu-settings-row">
+          <div class="setting-group">
+            <label for="select-quality">Preset Grafis:</label>
+            <select id="select-quality" class="select-control">
+              <option value="low">Low (Hemat RAM)</option>
+              <option value="medium">Medium (Seimbang)</option>
+              <option value="high" selected>High (PBR + Bayangan)</option>
+              <option value="ultra">Ultra (PC / Flagship)</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label class="toggle-label" for="toggle-vcontrols">
+              <input type="checkbox" id="toggle-vcontrols" checked />
+              <span>Tombol Layar</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="menu-btn-stack">
+          <button id="btn-start-game" class="btn btn-primary btn-large" type="button">
+            🏃 MULAI KABUR!
+          </button>
+          <div class="menu-sub-btns">
+            <button id="btn-open-help" class="btn btn-secondary" type="button">
+              🎮 Cara Bermain
+            </button>
+            <button id="btn-menu-mute" class="btn btn-secondary" type="button">
+              🔊 Suara: ON
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pause-screen" class="overlay hidden">
+      <div class="modal-card">
+        <div class="badge-tag warning">PERMAINAN DIJEDA</div>
+        <h2>Istirahat Sebentar</h2>
+        <p>Pak Wahid masih mengejar di koridor belakang SMAN 1 Pasir Sakti...</p>
+
+        <div class="menu-settings-row">
+          <div class="setting-group">
+            <label for="select-quality-pause">Preset Grafis:</label>
+            <select id="select-quality-pause" class="select-control">
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="ultra">Ultra</option>
+            </select>
+          </div>
+          <div class="setting-group">
+            <label class="toggle-label" for="toggle-vcontrols-pause">
+              <input type="checkbox" id="toggle-vcontrols-pause" checked />
+              <span>Tombol Virtual</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="menu-btn-stack">
+          <button id="btn-resume-game" class="btn btn-primary btn-large" type="button">
+            ▶️ Lanjutkan Lari
+          </button>
+          <button id="btn-pause-help" class="btn btn-secondary" type="button">
+            🎮 Petunjuk Kontrol
+          </button>
+          <button id="btn-restart-from-pause" class="btn btn-secondary" type="button">
+            🔄 Ulangi dari Awal
+          </button>
+          <button id="btn-quit-to-menu" class="btn btn-outline" type="button">
+            🏠 Kembali ke Menu
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="gameover-screen" class="overlay hidden">
+      <div class="modal-card gameover-card">
+        <div class="badge-tag danger">PRIIIT!! TERTANGKAP!</div>
+        <h2>KETANGKAP PAK WAHID!</h2>
+        <blockquote id="gameover-quote" class="teacher-quote">
+          "Nongkrong boleh, ketahuan jangan! Sekarang ikut Bapak kembali ke kelas XI A1!"
+        </blockquote>
+
+        <div class="gameover-stats">
+          <div class="go-stat">
+            <span>Jarak Tempuh</span>
+            <strong id="go-score">0 m</strong>
+          </div>
+          <div class="go-stat">
+            <span>Koin Kantin</span>
+            <strong id="go-coins">0</strong>
+          </div>
+          <div class="go-stat highlight">
+            <span>Rekor Terbaik</span>
+            <strong id="go-best">0 m</strong>
+          </div>
+        </div>
+
+        <div id="new-record-banner" class="new-record-banner hidden">
+          🎉 REKOR BARU SMAN 1 PASIR SAKTI! 🎉
+        </div>
+
+        <div class="menu-btn-stack">
+          <button id="btn-play-again" class="btn btn-primary btn-large" type="button">
+            🏃 KABUR LAGI!
+          </button>
+          <button id="btn-gameover-menu" class="btn btn-secondary" type="button">
+            🏠 Menu Utama
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="help-modal" class="overlay hidden" aria-modal="true" role="dialog">
+      <div class="modal-card help-card">
+        <div class="badge-tag info">PANDUAN KONTROL</div>
+        <h2>Cara Kabur dari Pak Wahid</h2>
+
+        <div class="controls-grid">
+          <div class="control-item">
+            <div class="control-icon">👈 / 👉</div>
+            <div class="control-desc">
+              <strong>Pindah Jalur Kiri / Kanan</strong>
+              <span>Swipe Kiri/Kanan, tombol ◀ ▶, atau keyboard <kbd>A</kbd> <kbd>D</kbd> / <kbd>◀</kbd> <kbd>▶</kbd></span>
+            </div>
+          </div>
+          <div class="control-item">
+            <div class="control-icon">👆</div>
+            <div class="control-desc">
+              <strong>Melompat (Meja, Kursi, Tas, Tempat Sampah)</strong>
+              <span>Swipe Atas, tombol ▲ LOMPAT, atau keyboard <kbd>W</kbd> / <kbd>▲</kbd> / <kbd>Spasi</kbd></span>
+            </div>
+          </div>
+          <div class="control-item">
+            <div class="control-icon">👇</div>
+            <div class="control-desc">
+              <strong>Meluncur / Slide (Palang Piket Tinggi)</strong>
+              <span>Swipe Bawah, tombol ▼ SLIDE, atau keyboard <kbd>S</kbd> / <kbd>▼</kbd></span>
+            </div>
+          </div>
+          <div class="control-item">
+            <div class="control-icon">⚡</div>
+            <div class="control-desc">
+              <strong>Power-Up Sekolah</strong>
+              <span>🧲 <em>Magnet Koin</em> • 👟 <em>Sepatu Kecepatan</em> • 🔔 <em>Mode Kabur Turbo</em></span>
+            </div>
+          </div>
+        </div>
+
+        <p class="help-tip">
+          💡 <strong>Tips:</strong> Menabrak meja atau tempat sampah membuatmu tersandung dan jarak Pak Wahid makin dekat! Berlarilah bersih melewati kantin &amp; parkiran motor untuk menjauh lagi.
+        </p>
+
+        <button id="btn-close-help" class="btn btn-primary btn-large" type="button">
+          👍 SIAP, MENGERTI!
+        </button>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="./assets/main.js"></script>
+</body>
+</html>

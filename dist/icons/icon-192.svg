@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="sky" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#93c5fd"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="38" fill="url(#sky)"/>
+  <!-- Pilar Hijau-Krem SMAN 1 Pasir Sakti -->
+  <rect x="14" y="18" width="164" height="24" rx="6" fill="#2f6f4e"/>
+  <path d="M18 174 L68 104 L124 104 L174 174 Z" fill="#ecebe4"/>
+  <!-- Siswa Batik Marun -->
+  <circle cx="68" cy="68" r="19" fill="#dca074"/>
+  <path d="M49 62 Q68 40 87 62 Z" fill="#16181d"/>
+  <rect x="50" y="88" width="36" height="36" rx="8" fill="#6b1824"/>
+  <circle cx="60" cy="98" r="3" fill="#facc15"/>
+  <circle cx="76" cy="98" r="3" fill="#f8fafc"/>
+  <circle cx="68" cy="110" r="3" fill="#facc15"/>
+  <rect x="53" y="122" width="30" height="22" rx="4" fill="#52637a"/>
+  <!-- Pak Wahid Baju Putih Polos & Kumis -->
+  <circle cx="128" cy="66" r="21" fill="#d6986c"/>
+  <path d="M107 58 Q128 36 149 58 Z" fill="#18181b"/>
+  <path d="M116 74 Q128 68 140 74 Q128 79 116 74 Z" fill="#18181b"/>
+  <rect x="106" y="88" width="44" height="38" rx="9" fill="#f8fafc"/>
+  <rect x="112" y="96" width="10" height="4" fill="#0f172a"/>
+  <rect x="110" y="124" width="36" height="20" rx="4" fill="#23272f"/>
+  <rect x="18" y="148" width="156" height="28" rx="8" fill="#0f172a"/>
+  <text x="96" y="167" font-family="Arial, sans-serif" font-weight="900" font-size="16" text-anchor="middle" fill="#fde047">PAK WAHID!</text>
+</svg>
